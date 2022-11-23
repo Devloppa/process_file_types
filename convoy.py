@@ -39,18 +39,19 @@ class MyTable:
             return True
         else:
             self.new_file_name = self.file_name
+            return False
 
     def fix_csv(self):
         with open(f"{self.new_file_name}", mode="r", newline="") as csv_f:
             file_reader = csv.reader(csv_f, delimiter=",")
-            for line in enumerate(file_reader):
-                if line[0] == 0:
-                    self.corrected_lst.append(line[1])
-                if line[0] != 0:
-                    self.corrected_lst.append(line[1])
-                    for cell in enumerate(line[1]):
-                        if not str(cell[1]).isdigit():
-                            self.corrected_lst[line[0]][cell[0]] = re.sub(r"\D", "", cell[1])
+            for index, row in enumerate(file_reader):
+                if index == 0:
+                    self.corrected_lst.append(row)
+                if index != 0:
+                    self.corrected_lst.append(row)
+                    for cell_index, cell in enumerate(row):
+                        if not str(cell).isdigit():
+                            self.corrected_lst[index][cell_index] = re.sub(r"\D", "", cell)
                             self.num_corrected += 1
 
     def write_fixed_csv(self):
