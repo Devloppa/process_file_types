@@ -134,15 +134,9 @@ class MyTable:
     def define_rect_csv_name(self):
         self.rect_csv_name = re.sub(r"\.csv", "[CHECKED].csv", self.csv_file_name)
 
-    def write_fixed_csv(self):
-        self.output_file_name = self.csv_file_name.replace(".csv", "[CHECKED].csv")
-        self.csv_file_name = self.csv_file_name.replace(".csv", "[CHECKED].csv")
-        with open(f"{self.output_file_name}", mode="w", encoding="utf-8") as csv_f:
-            file_writer = csv.writer(csv_f, delimiter=",", lineterminator="\n")
-            file_writer.writerows(self.corrected_lst)
-
     def write_rect_to_disk(self):
         self.df.to_csv(f"{self.rect_csv_name}", index=None)
+
     def print_num_rect_cells(self):
         num = self.num_rect_cells
         if num > 0:
@@ -150,15 +144,6 @@ class MyTable:
 
     def define_db_name(self):
         self.db_name = re.sub(r"\[CHECKED]\.csv", ".s3db", self.rect_csv_name)
-
-    def read_to_lst(self):
-        with open(f"{self.csv_file_name}", mode="r", newline="") as csv_f:
-            file_reader = csv.reader(csv_f, delimiter=",")
-            for index, row in enumerate(file_reader):
-                if index == 0:
-                    continue
-                if index != 0:
-                    self.db_lst.append(row)
 
     def connect_to_db(self):
         self.conn = sqlite3.connect(self.db_name)
@@ -183,14 +168,6 @@ class MyTable:
         ins = self.num_of_insertions
         print(f"{ins} {'records were' if ins > 1 else 'record was'} inserted into {self.db_name}")
 
-    def db_stats(self):
-        result = self.cursor.execute("""
-        SELECT * FROM convoy
-        """)
-        self.num_of_records = len(result.fetchall())
-        print(f"{self.num_of_records} records were inserted into {self.db_name}") if self.num_of_records > 1 else print(
-            f"1 record was inserted into {self.db_name}")
-
     def define_json_name(self):
         self.json_file_name = re.sub(r"\.s3db", ".json", self.db_name)
 
@@ -204,14 +181,6 @@ class MyTable:
     def print_num_vehicles(self):
         length = len(self.json_dict["convoy"])
         print(f"{length} {'vehicles were' if length > 1 else 'vehicle was'} saved into {self.json_file_name}")
-
-    def print_write_json(self):
-        self.json_file_name = self.db_name.replace(".s3db", ".json")
-        self.json_length = len(self.json_dict['convoy'])
-        with open(f"{self.json_name}", mode="w", encoding="utf-8") as json_f:
-            json_f.write(json.dumps(self.json_dict, indent=4))
-        print(f"{self.json_length} vehicles were saved into {self.json_name}") if self.json_length > 1 else print(
-            f"1 vehicle was saved into {self.json_name}")
 
 
 MyTable()
