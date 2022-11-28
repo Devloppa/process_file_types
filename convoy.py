@@ -1,6 +1,5 @@
 import json
 import pandas as pd
-import csv
 import re
 import sqlite3
 
@@ -10,7 +9,7 @@ class MyTable:
     def __init__(self):
         self.file_name = input("Input file name\n")
         self.file_type = None
-        self.df = None
+        self.df = pd.DataFrame
         self.rows = None
         self.cols = None
         self.num_rect_cells = 0
@@ -54,6 +53,9 @@ class MyTable:
             self.define_json_name()
             self.write_json_to_disk()
             self.print_num_vehicles()
+            self.define_xml_name()
+            self.write_xml_to_disk()
+            self.print_num_vehicles()
 
         elif self.file_type == "CSV":
             self.convert_csv_to_df()
@@ -70,6 +72,9 @@ class MyTable:
             self.define_json_name()
             self.write_json_to_disk()
             self.print_num_vehicles()
+            self.define_xml_name()
+            self.write_xml_to_disk()
+            self.print_num_vehicles()
 
         elif self.file_type == "CHECKED_CSV":
             self.convert_csv_to_df()
@@ -82,12 +87,18 @@ class MyTable:
             self.write_json_to_disk()
             self.get_df_shape()
             self.print_num_vehicles()
+            self.define_xml_name()
+            self.write_xml_to_disk()
+            self.print_num_vehicles()
 
         elif self.file_type == "S3DB":
             self.connect_to_db()
             self.define_json_name()
             self.write_json_to_disk()
             self.get_df_shape()
+            self.print_num_vehicles()
+            self.define_xml_name()
+            self.write_xml_to_disk()
             self.print_num_vehicles()
 
 
@@ -166,6 +177,12 @@ class MyTable:
 
     def print_num_vehicles(self):
         print(f"{self.rows} {'vehicles were' if self.rows > 1 else 'vehicle was'} saved into {self.file_name}")
+
+    def define_xml_name(self):
+        self.file_name = re.sub(r"\.json", ".xml", self.file_name)
+
+    def write_xml_to_disk(self):
+        self.df.to_xml(self.file_name, index=False, root_name="convoy", row_name="vehicle", xml_declaration=False)
 
 
 MyTable()
